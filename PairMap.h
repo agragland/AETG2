@@ -9,12 +9,20 @@
 
 using namespace std;
 
-//TODO: Move pair generation into PairMap constructor, generate helper funtions for find # pairs, covering pairs, etc
 
-//class PairMap {
-//
-//public:
-//    unordered_map<pair<int,int>,bool> pairMap;
-//};
+class PairMap {
+private:
+    map<pair<int,int>,bool> coverMap;
+    map<pair<int,int>,bool>::iterator it;
+    int factors;
+    int levels;
+
+public:
+    PairMap(int,int);
+    vector<pair<int,int>> findPairs(int);
+    void coverPairs(vector<pair<int,int>>);
+
+
+};
 
 

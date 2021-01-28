@@ -4,4 +4,4 @@ project(AETG2)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(AETG2
-        testPairs.cpp)
+        PairMap.cpp PairMap.h main.cpp)

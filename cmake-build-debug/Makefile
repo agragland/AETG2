@@ -122,32 +122,59 @@ AETG2/fast:
 	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/build
 .PHONY : AETG2/fast
 
-testPairs.obj: testPairs.cpp.obj
+PairMap.obj: PairMap.cpp.obj
 
-.PHONY : testPairs.obj
+.PHONY : PairMap.obj
 
 # target to build an object file
-testPairs.cpp.obj:
-	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/testPairs.cpp.obj
-.PHONY : testPairs.cpp.obj
+PairMap.cpp.obj:
+	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/PairMap.cpp.obj
+.PHONY : PairMap.cpp.obj
 
-testPairs.i: testPairs.cpp.i
+PairMap.i: PairMap.cpp.i
 
-.PHONY : testPairs.i
+.PHONY : PairMap.i
 
 # target to preprocess a source file
-testPairs.cpp.i:
-	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/testPairs.cpp.i
-.PHONY : testPairs.cpp.i
+PairMap.cpp.i:
+	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/PairMap.cpp.i
+.PHONY : PairMap.cpp.i
 
-testPairs.s: testPairs.cpp.s
+PairMap.s: PairMap.cpp.s
 
-.PHONY : testPairs.s
+.PHONY : PairMap.s
 
 # target to generate assembly for a file
-testPairs.cpp.s:
-	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/testPairs.cpp.s
-.PHONY : testPairs.cpp.s
+PairMap.cpp.s:
+	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/PairMap.cpp.s
+.PHONY : PairMap.cpp.s
+
+main.obj: main.cpp.obj
+
+.PHONY : main.obj
+
+# target to build an object file
+main.cpp.obj:
+	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/main.cpp.obj
+.PHONY : main.cpp.obj
+
+main.i: main.cpp.i
+
+.PHONY : main.i
+
+# target to preprocess a source file
+main.cpp.i:
+	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/main.cpp.i
+.PHONY : main.cpp.i
+
+main.s: main.cpp.s
+
+.PHONY : main.s
+
+# target to generate assembly for a file
+main.cpp.s:
+	$(MAKE) -f CMakeFiles\AETG2.dir\build.make CMakeFiles/AETG2.dir/main.cpp.s
+.PHONY : main.cpp.s
 
 # Help Target
 help:
@@ -158,9 +185,12 @@ help:
 	@echo ... AETG2
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... testPairs.obj
-	@echo ... testPairs.i
-	@echo ... testPairs.s
+	@echo ... PairMap.obj
+	@echo ... PairMap.i
+	@echo ... PairMap.s
+	@echo ... main.obj
+	@echo ... main.i
+	@echo ... main.s
 .PHONY : help
 
 

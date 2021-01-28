@@ -80,6 +80,15 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/Andrew/Documents/Spring2021/AETG2/PairMap.cpp">
+			<Option target="AETG2"/>
+		</Unit>
+		<Unit filename="C:/Users/Andrew/Documents/Spring2021/AETG2/PairMap.h">
+			<Option target="AETG2"/>
+		</Unit>
+		<Unit filename="C:/Users/Andrew/Documents/Spring2021/AETG2/main.cpp">
+			<Option target="AETG2"/>
+		</Unit>
 		<Unit filename="C:/Users/Andrew/Documents/Spring2021/AETG2/testPairs.cpp">
 			<Option target="AETG2"/>
 		</Unit>

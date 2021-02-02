@@ -4,21 +4,24 @@
 
 #include "PairMap.h"
 
-PairMap::PairMap(int fct, int lvl) {
-    factors = fct;
-    levels = lvl;
-
-    for(int i = 0; i < factors; i++)
+PairMap::PairMap(vector<vector<int>> coverArray) {
+    int currFactor = 0;
+    for(const auto& fct:coverArray)
     {
-        for(int j = 0; j < levels; j++)
+        for(auto lvl:fct)
         {
-            for(int k = levels*(i+1); k < factors*levels; k++)
+            for(unsigned int pairFct = currFactor+1; pairFct < coverArray.size(); pairFct++)
             {
-                pair<int,int> toEmp = make_pair(j+(levels*i),k);
-                coverMap.emplace(toEmp,false);
+                for(int & pairLvl : coverArray.at(pairFct))
+                {
+                    pair<int,int> toEmp = make_pair(lvl,pairLvl);
+                    coverMap.emplace(toEmp,false);
+                }
             }
         }
+        currFactor++;
     }
+
 }
 
 //Find all uncovered pairs that contain pairVal and store them in a vector
@@ -42,5 +45,11 @@ void PairMap::coverPairs(vector<pair<int, int>> toCover) {
     {
         coverMap.at(toCover.at(i)) = true;
     }
+}
+
+void PairMap::printContents() {
+
+    cout << "Stored: " << coverMap.size() << " pairs.\n" << endl;
+
 }
 

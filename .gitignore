@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+#folders
+/cmake-build-debug/
+
+#CMakeFiles
+CMakeLists.txt

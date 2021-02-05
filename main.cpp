@@ -2,8 +2,6 @@
 // Created by Andrew on 1/28/2021.
 //
 
-#include <random>
-
 #include "PairMap.h"
 
 
@@ -90,7 +88,7 @@ int main()
                     //break a tie
                     random_device tieSeed;
                     mt19937 gen(tieSeed());
-                    uniform_int_distribution<> distr(0,potentialLevels.size());
+                    uniform_int_distribution<> distr(0,potentialLevels.size()-1);
                     unsigned int tieBreaker = distr(gen);
                     candidate.at(factorOrder.at(0)) = potentialLevels.at(tieBreaker);
                 }
@@ -114,7 +112,7 @@ int main()
                         //break a tie
                         random_device tieSeed;
                         mt19937 gen(tieSeed());
-                        uniform_int_distribution<> distr(0,potentialLevels.size());
+                        uniform_int_distribution<> distr(0,potentialLevels.size()-1);
                         unsigned int tieBreaker = distr(gen);
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
                     }

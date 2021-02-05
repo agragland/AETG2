@@ -89,8 +89,9 @@ int main()
                 } else {
                     //break a tie
                     random_device tieSeed;
-                    srand(tieSeed());
-                    unsigned int tieBreaker = rand() % potentialLevels.size();
+                    mt19937 gen(tieSeed());
+                    uniform_int_distribution<> distr(0,potentialLevels.size());
+                    unsigned int tieBreaker = distr(gen);
                     candidate.at(factorOrder.at(0)) = potentialLevels.at(tieBreaker);
                 }
 
@@ -112,8 +113,9 @@ int main()
                     } else {
                         //break a tie
                         random_device tieSeed;
-                        srand(tieSeed());
-                        unsigned int tieBreaker = rand() % potentialLevels.size();
+                        mt19937 gen(tieSeed());
+                        uniform_int_distribution<> distr(0,potentialLevels.size());
+                        unsigned int tieBreaker = distr(gen);
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
                     }
 

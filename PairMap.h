@@ -5,8 +5,11 @@
 #include <string>
 #include <map>
 #include <utility>
+#include <algorithm>
+#include <random>
 #include <vector>
 #include <regex>
+#include <ctime>
 
 using namespace std;
 
@@ -21,8 +24,12 @@ private:
 public:
     PairMap(vector<vector<int>> coverArray);
     vector<pair<int,int>> findPairs(int);
-    void coverPairs(vector<pair<int,int>>);
-    void printContents();
+    int countPairs(int);
+    int countPairs(vector<int>);
+    void coverPairs(vector<int>);
+    int pairsCovered();
+    int getTotalPairs();
+    void resetPairs();
 
 
 };

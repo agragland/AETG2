@@ -40,16 +40,75 @@ vector<pair<int,int>> PairMap::findPairs(int pairVal) {
 }
 
 //Cover all pairs that are in this vector
-void PairMap::coverPairs(vector<pair<int, int>> toCover) {
-    for(int i = 0; i < toCover.size(); i++)
+void PairMap::coverPairs(vector<int> candidate) {
+    for(int i = 0; i < candidate.size(); i++)
     {
-        coverMap.at(toCover.at(i)) = true;
+        for(int j = i; j < candidate.size(); j++)
+        {
+            pair<int,int> toCover = make_pair(candidate[i],candidate[j]);
+            if(coverMap.find(toCover) != coverMap.end())
+            {
+                coverMap.at(toCover) = true;
+            }
+        }
     }
 }
 
-void PairMap::printContents() {
+int PairMap::getTotalPairs() {
 
-    cout << "Stored: " << coverMap.size() << " pairs.\n" << endl;
+    return coverMap.size();
 
+}
+
+int PairMap::countPairs(int pairVal) {
+    int count = 0;
+    for(it = coverMap.begin(); it != coverMap.end(); it++)
+    {
+        if((it->first.first == pairVal || it -> first.second == pairVal) && !it->second)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+int PairMap::countPairs(vector<int> candidate) {
+    int count = 0;
+    for(int i = 0; i < candidate.size(); i++)
+    {
+        if(candidate.at(i) != -1)
+        {
+            for(int j = i+1; j < candidate.size(); j++)
+            {
+                map<pair<int,int>,bool>::iterator x;
+                pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(j));
+                if((x = coverMap.find(toFind)) != coverMap.end())
+                {
+                    if(!x->second)
+                    count++;
+                }
+            }
+        }
+    }
+    return count;
+}
+
+int PairMap::pairsCovered() {
+    int count = 0;
+    for(it = coverMap.begin(); it != coverMap.end(); it++)
+    {
+        if(it->second)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+void PairMap::resetPairs() {
+    for(it = coverMap.begin(); it != coverMap.end(); it++)
+    {
+        it->second = false;
+    }
 }
 

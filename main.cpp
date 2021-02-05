@@ -2,6 +2,8 @@
 // Created by Andrew on 1/28/2021.
 //
 
+#include <random>
+
 #include "PairMap.h"
 
 
@@ -16,7 +18,7 @@ int main()
 
     cout << "Input as follows - \"Levels^Factors\" - for as many factors and levels as desired: ";
     getline(cin, coveringInput);
-
+    cout << endl;
     regex fctLvl ("(\\d+)\\^(\\d+)");
     smatch m;
 
@@ -42,10 +44,122 @@ int main()
 
     PairMap coverMap(coveringArray);
 
-    coverMap.printContents();
+    vector<vector<vector<int>>> testSuites;
 
-    //generating a candidate
-    //randomize factor order
+    for(int suite = 0; suite < 100; suite++)
+    {
+        cout << "Completion Progress: " << suite << "%\r";
+        //generating a candidate
+        vector<vector<int>> testSuite;
+        vector<int> candidate;
+        vector<int> bestCandidate;
+        int bestCandidateCount = 0;
+
+
+        while (coverMap.pairsCovered() < coverMap.getTotalPairs()) {
+
+            for (int i = 0; i < 50; i++) {
+
+                candidate.resize(coveringArray.size(), -1);          //set all value within candidate to -1
+                bestCandidate.resize(coveringArray.size(), -1);
+                //randomize the order of factors to find levels for
+                unsigned seed = time(NULL);
+                vector<int> factorOrder;
+                for (int i = 0; i < coveringArray.size(); i++) {
+                    factorOrder.push_back(i);
+                }
+                shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(seed));
+
+
+                //looking at the first factor
+                int bestCount = -1;
+                int bestLevel = -1;
+                int factorCount = 1;
+                vector<int> potentialLevels;
+
+                for (auto it: coveringArray.at(factorOrder.at(0))) {
+                    if (coverMap.countPairs(it) >= bestCount) {
+                        bestCount = coverMap.countPairs(it);
+                        bestLevel = it;
+                        potentialLevels.push_back(it);
+                    }
+                }
+                if (potentialLevels.size() == 1) {
+                    candidate.at(factorOrder.at(0)) = potentialLevels.at(0);
+                } else {
+                    //break a tie
+                    random_device tieSeed;
+                    srand(tieSeed());
+                    unsigned int tieBreaker = rand() % potentialLevels.size();
+                    candidate.at(factorOrder.at(0)) = potentialLevels.at(tieBreaker);
+                }
+
+                //repeat with rest of the factors
+                while (factorCount < factorOrder.size()) {
+                    bestCount = -1;
+                    potentialLevels.clear();
+
+                    for (auto it: coveringArray.at(factorOrder.at(factorCount))) {
+                        candidate.at(factorOrder.at(factorCount)) = it;
+                        if (coverMap.countPairs(candidate) >= bestCount) {
+                            bestCount = coverMap.countPairs(candidate);
+                            bestLevel = it;
+                            potentialLevels.push_back(it);
+                        }
+                    }
+                    if (potentialLevels.size() == 1) {
+                        candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(0);
+                    } else {
+                        //break a tie
+                        random_device tieSeed;
+                        srand(tieSeed());
+                        unsigned int tieBreaker = rand() % potentialLevels.size();
+                        candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
+                    }
+
+                    factorCount++;
+                }
+
+                if (coverMap.countPairs(candidate) > coverMap.countPairs(bestCandidate)) {
+                    bestCandidate = candidate;
+                }
+            }
+
+            coverMap.coverPairs(bestCandidate);
+            testSuite.push_back(bestCandidate);
+            candidate.clear();
+            bestCandidate.clear();
+        }
+
+        testSuites.push_back(testSuite);
+        coverMap.resetPairs();
+    }
+
+    int lowest = testSuites.at(0).size();
+    int highest = 0;
+    int average = 0;
+    int sum = 0;
+
+    for(auto t:testSuites)
+    {
+        if(t.size() > highest)
+        {
+            highest = t.size();
+        }
+        if(t.size() < lowest)
+        {
+            lowest = t.size();
+        }
+        sum += t.size();
+    }
+
+    average = sum/100;
+
+    cout << "Results: " << endl;
+    cout << "Lowest mAETG: " << lowest << endl;
+    cout << "Highest mAETG: " << highest << endl;
+    cout << "Average mAETG: " << average << endl;
+
     //for the first factor, check which level can cover the most new pairs, store result into candidate data structure
     //for the next factors, check which level will cover the most pairs when
     // paired with the level of all previous factors, store result into candida

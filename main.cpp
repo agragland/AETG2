@@ -42,7 +42,7 @@ int main()
 
     PairMap coverMap(coveringArray);
 
-    vector<vector<vector<int>>> testSuites;
+    vector<vector<vector<int>>> testSuites (100);
 
     for(int suite = 0; suite < 100; suite++)
     {
@@ -88,7 +88,7 @@ int main()
                     //break a tie
                     random_device tieSeed;
                     mt19937 gen(tieSeed());
-                    uniform_int_distribution<> distr(0,potentialLevels.size()-1);
+                    uniform_int_distribution<> distr(0,potentialLevels.size());
                     unsigned int tieBreaker = distr(gen);
                     candidate.at(factorOrder.at(0)) = potentialLevels.at(tieBreaker);
                 }
@@ -112,7 +112,7 @@ int main()
                         //break a tie
                         random_device tieSeed;
                         mt19937 gen(tieSeed());
-                        uniform_int_distribution<> distr(0,potentialLevels.size()-1);
+                        uniform_int_distribution<> distr(0,potentialLevels.size());
                         unsigned int tieBreaker = distr(gen);
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
                     }
@@ -131,7 +131,7 @@ int main()
             bestCandidate.clear();
         }
 
-        testSuites.push_back(testSuite);
+        testSuites[suite] = testSuite;
         coverMap.resetPairs();
     }
 

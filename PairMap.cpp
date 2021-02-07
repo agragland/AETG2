@@ -80,12 +80,15 @@ int PairMap::countPairs(vector<int> candidate) {
         {
             for(int j = i+1; j < candidate.size(); j++)
             {
-                map<pair<int,int>,bool>::iterator x;
-                pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(j));
-                if((x = coverMap.find(toFind)) != coverMap.end())
+                if(candidate.at(j) != -1)
                 {
-                    if(!x->second)
-                    count++;
+                    map<pair<int,int>,bool>::iterator x;
+                    pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(j));
+                    if((x = coverMap.find(toFind)) != coverMap.end())
+                    {
+                        if(!x->second)
+                            count++;
+                    }
                 }
             }
         }

@@ -17,6 +17,7 @@ using namespace std;
 class PairMap {
 private:
     map<pair<int,int>,bool> coverMap;
+    map<pair<int,int>, bool> copyMap;
     map<pair<int,int>,bool>::iterator it;
     int factors = 0;
     int levels = 0;

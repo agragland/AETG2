@@ -22,6 +22,7 @@ PairMap::PairMap(vector<vector<int>> coverArray) {
         currFactor++;
     }
 
+    copyMap = coverMap;
 }
 
 //Find all uncovered pairs that contain pairVal and store them in a vector
@@ -41,15 +42,12 @@ vector<pair<int,int>> PairMap::findPairs(int pairVal) {
 
 //Cover all pairs that are in this vector
 void PairMap::coverPairs(vector<int> candidate) {
-    for(int i = 0; i < candidate.size(); i++)
+    for(int i = 0; i < candidate.size()-1; i++)
     {
         for(int j = i; j < candidate.size(); j++)
         {
             pair<int,int> toCover = make_pair(candidate[i],candidate[j]);
-            if(coverMap.find(toCover) != coverMap.end())
-            {
-                coverMap.at(toCover) = true;
-            }
+            coverMap.erase(toCover);
         }
     }
 }
@@ -76,20 +74,13 @@ int PairMap::countPairs(vector<int> candidate) {
     int count = 0;
     for(int i = 0; i < candidate.size(); i++)
     {
-        if(candidate.at(i) != -1)
+        for(int j = i+1; j < candidate.size(); j++)
         {
-            for(int j = i+1; j < candidate.size(); j++)
+            if(candidate.at(i) != -1 && candidate.at(j) != -1)
             {
-                if(candidate.at(j) != -1)
-                {
-                    map<pair<int,int>,bool>::iterator x;
-                    pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(j));
-                    if((x = coverMap.find(toFind)) != coverMap.end())
-                    {
-                        if(!x->second)
-                            count++;
-                    }
-                }
+                pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(j));
+                if(coverMap.find(toFind) != coverMap.end())
+                    count++;
             }
         }
     }
@@ -109,9 +100,6 @@ int PairMap::pairsCovered() {
 }
 
 void PairMap::resetPairs() {
-    for(it = coverMap.begin(); it != coverMap.end(); it++)
-    {
-        it->second = false;
-    }
+    coverMap = copyMap;
 }
 

@@ -39,6 +39,8 @@ int main()
         coveringInput = m.suffix().str();
     }
 
+    unsigned seed = time(NULL);
+    srand(rand() ^ seed);
 
     PairMap coverMap(coveringArray);
 
@@ -53,20 +55,23 @@ int main()
         vector<int> bestCandidate;
         int bestCandidateCount = 0;
 
+        vector<int> factorOrder;
+        for (int i = 0; i < coveringArray.size(); i++) {
+            factorOrder.push_back(i);
+        }
+        shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(rand()));
 
-        while (coverMap.pairsCovered() < coverMap.getTotalPairs()) {
+
+        while (coverMap.getTotalPairs() > 0) {
 
             for (int i = 0; i < 50; i++) {
 
                 candidate.resize(coveringArray.size(), -1);          //set all value within candidate to -1
                 bestCandidate.resize(coveringArray.size(), -1);
                 //randomize the order of factors to find levels for
-                unsigned seed = time(NULL);
-                vector<int> factorOrder;
-                for (int i = 0; i < coveringArray.size(); i++) {
-                    factorOrder.push_back(i);
-                }
-                shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(seed));
+
+
+                shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(rand()));
 
 
                 //looking at the first factor
@@ -86,10 +91,7 @@ int main()
                     candidate.at(factorOrder.at(0)) = potentialLevels.at(0);
                 } else {
                     //break a tie
-                    random_device tieSeed;
-                    mt19937 gen(tieSeed());
-                    uniform_int_distribution<> distr(0,potentialLevels.size());
-                    unsigned int tieBreaker = distr(gen);
+                    unsigned int tieBreaker = rand() % potentialLevels.size();
                     candidate.at(factorOrder.at(0)) = potentialLevels.at(tieBreaker);
                 }
 
@@ -110,10 +112,7 @@ int main()
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(0);
                     } else {
                         //break a tie
-                        random_device tieSeed;
-                        mt19937 gen(tieSeed());
-                        uniform_int_distribution<> distr(0,potentialLevels.size());
-                        unsigned int tieBreaker = distr(gen);
+                        unsigned int tieBreaker = rand() % potentialLevels.size();
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
                     }
 

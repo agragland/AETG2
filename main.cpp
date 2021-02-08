@@ -53,7 +53,8 @@ int main()
         vector<vector<int>> testSuite;
         vector<int> candidate;
         vector<int> bestCandidate;
-        int bestCandidateCount = 0;
+        int bestTotal = -1;
+        int runningTotal = 0;
 
         vector<int> factorOrder;
         for (int i = 0; i < coveringArray.size(); i++) {
@@ -64,8 +65,9 @@ int main()
 
         while (coverMap.getTotalPairs() > 0) {
 
-            for (int i = 0; i < 50; i++) {
+            bestTotal = -1;
 
+            for (int i = 0; i < 50; i++) {
                 candidate.resize(coveringArray.size(), -1);          //set all value within candidate to -1
                 bestCandidate.resize(coveringArray.size(), -1);
                 //randomize the order of factors to find levels for
@@ -76,14 +78,12 @@ int main()
 
                 //looking at the first factor
                 int bestCount = -1;
-                int bestLevel = -1;
                 int factorCount = 1;
                 vector<int> potentialLevels;
 
                 for (auto it: coveringArray.at(factorOrder.at(0))) {
                     if (coverMap.countPairs(it) >= bestCount) {
                         bestCount = coverMap.countPairs(it);
-                        bestLevel = it;
                         potentialLevels.push_back(it);
                     }
                 }
@@ -100,26 +100,29 @@ int main()
                     bestCount = -1;
                     potentialLevels.clear();
 
+                    int count;
                     for (auto it: coveringArray.at(factorOrder.at(factorCount))) {
                         candidate.at(factorOrder.at(factorCount)) = it;
-                        if (coverMap.countPairs(candidate) >= bestCount) {
-                            bestCount = coverMap.countPairs(candidate);
-                            bestLevel = it;
+                        if ((count = coverMap.countPairs(candidate,factorOrder[factorCount])) >= bestCount) {
+                            bestCount = count;
                             potentialLevels.push_back(it);
                         }
                     }
                     if (potentialLevels.size() == 1) {
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(0);
+                        runningTotal = bestCount;
                     } else {
                         //break a tie
                         unsigned int tieBreaker = rand() % potentialLevels.size();
                         candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
+                        runningTotal = bestCount;
                     }
 
                     factorCount++;
                 }
 
-                if (coverMap.countPairs(candidate) > coverMap.countPairs(bestCandidate)) {
+                if (runningTotal >= bestTotal) {
+                    bestTotal = runningTotal;
                     bestCandidate = candidate;
                 }
             }

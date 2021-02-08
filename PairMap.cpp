@@ -70,20 +70,23 @@ int PairMap::countPairs(int pairVal) {
     return count;
 }
 
-int PairMap::countPairs(vector<int> candidate) {
+int PairMap::countPairs(vector<int> candidate,int index) {
     int count = 0;
-    for(int i = 0; i < candidate.size(); i++)
+    for(int i = 0; i < index; i++)
     {
-        for(int j = i+1; j < candidate.size(); j++)
-        {
-            if(candidate.at(i) != -1 && candidate.at(j) != -1)
-            {
-                pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(j));
-                if(coverMap.find(toFind) != coverMap.end())
-                    count++;
-            }
-        }
+        pair<int,int> toFind = make_pair(candidate.at(i),candidate.at(index));
+        if(coverMap.find(toFind) != coverMap.end())
+            count++;
+
     }
+    for(int i = index+1; i < candidate.size(); i++)
+    {
+        pair<int,int> toFind = make_pair(candidate.at(index),candidate.at(i));
+        if(coverMap.find(toFind) != coverMap.end())
+            count++;
+
+    }
+
     return count;
 }
 
@@ -101,5 +104,9 @@ int PairMap::pairsCovered() {
 
 void PairMap::resetPairs() {
     coverMap = copyMap;
+}
+
+bool PairMap::checkExist(pair<int,int> p) {
+    return coverMap.find(p) != coverMap.end();
 }
 

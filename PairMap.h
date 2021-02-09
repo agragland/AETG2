@@ -28,21 +28,20 @@ private:
     unordered_map<pair<int,int>,bool,PairHash> coverMap;
     unordered_map<pair<int,int>, bool,PairHash> copyMap;
     unordered_map<pair<int,int>,bool,PairHash>::iterator it;
-    int factors = 0;
-    int levels = 0;
+    vector<vector<int>> coveringArray;
+    int covered = 0;
+    int totalPairs;
 
 public:
     PairMap(vector<vector<int>> coverArray);
-    vector<pair<int,int>> findPairs(int);
-    int countPairs(int);
+    int countPairs(int, int);
     int countPairs(vector<int>,int);
     void coverPairs(vector<int>);
-    int pairsCovered();
     int getTotalPairs();
     void resetPairs();
-    bool checkExist(pair<int,int>);
 
 
+    int getCovered();
 };
 
 

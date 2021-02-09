@@ -40,97 +40,98 @@ int main()
     }
 
     unsigned seed = time(NULL);
-    srand(rand() ^ seed);
+    srand(seed);
 
     PairMap coverMap(coveringArray);
 
-    vector<vector<vector<int>>> testSuites (100);
+    vector<vector<vector<int>>> testSuites(100);
 
     for(int suite = 0; suite < 100; suite++)
     {
         cout << "Completion Progress: " << suite << "%" << endl;
-        //generating a candidate
+
         vector<vector<int>> testSuite;
-        vector<int> candidate;
-        vector<int> bestCandidate;
-        int bestTotal = -1;
-        int runningTotal = 0;
+        vector<int> candidate(coveringArray.size());
+        vector<int> bestCandidate(coveringArray.size());
+        vector<vector<int>> potentialCandidates;
 
-        vector<int> factorOrder;
+        int bestTotal;
+        int count;
+
+        vector<int> factorOrder (coveringArray.size());
         for (int i = 0; i < coveringArray.size(); i++) {
-            factorOrder.push_back(i);
+            factorOrder[i] = i;
         }
-        shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(rand()));
 
-
-        while (coverMap.getTotalPairs() > 0) {
+        while (coverMap.getCovered() < coverMap.getTotalPairs()){
 
             bestTotal = -1;
+            fill(bestCandidate.begin(),bestCandidate.end(), -1);
+
+
 
             for (int i = 0; i < 50; i++) {
-                candidate.resize(coveringArray.size(), -1);          //set all value within candidate to -1
-                bestCandidate.resize(coveringArray.size(), -1);
-                //randomize the order of factors to find levels for
 
+                fill(candidate.begin(),candidate.end(), -1);
+                //randomize the order of factors to find levels for
 
                 shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(rand()));
 
-
                 //looking at the first factor
+                int runningTotal = 0;
                 int bestCount = -1;
-                int factorCount = 1;
+                int currentFactor = 0;
                 vector<int> potentialLevels;
 
-                for (auto it: coveringArray.at(factorOrder.at(0))) {
-                    if (coverMap.countPairs(it) >= bestCount) {
-                        bestCount = coverMap.countPairs(it);
+                for (auto it: coveringArray.at(factorOrder.at(currentFactor))) {
+                    if ((count = coverMap.countPairs(it, factorOrder[currentFactor])) >= bestCount) {
+                        bestCount = count;
                         potentialLevels.push_back(it);
                     }
                 }
-                if (potentialLevels.size() == 1) {
-                    candidate.at(factorOrder.at(0)) = potentialLevels.at(0);
-                } else {
-                    //break a tie
-                    unsigned int tieBreaker = rand() % potentialLevels.size();
-                    candidate.at(factorOrder.at(0)) = potentialLevels.at(tieBreaker);
-                }
 
+                //used for picking desired candidate
+                unsigned int tieBreaker = rand() % potentialLevels.size();
+                candidate.at(factorOrder.at(currentFactor)) = potentialLevels.at(tieBreaker);
+
+                currentFactor++;
                 //repeat with rest of the factors
-                while (factorCount < factorOrder.size()) {
+                while (currentFactor < factorOrder.size()) {
                     bestCount = -1;
                     potentialLevels.clear();
 
-                    int count;
-                    for (auto it: coveringArray.at(factorOrder.at(factorCount))) {
-                        candidate.at(factorOrder.at(factorCount)) = it;
-                        if ((count = coverMap.countPairs(candidate,factorOrder[factorCount])) >= bestCount) {
+
+                    for (auto it: coveringArray.at(factorOrder.at(currentFactor))) {
+                        candidate.at(factorOrder.at(currentFactor)) = it;
+                        if ((count = coverMap.countPairs(candidate,factorOrder[currentFactor])) >= bestCount) {
                             bestCount = count;
                             potentialLevels.push_back(it);
                         }
                     }
-                    if (potentialLevels.size() == 1) {
-                        candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(0);
-                        runningTotal = bestCount;
-                    } else {
-                        //break a tie
-                        unsigned int tieBreaker = rand() % potentialLevels.size();
-                        candidate.at(factorOrder.at(factorCount)) = potentialLevels.at(tieBreaker);
-                        runningTotal = bestCount;
-                    }
 
-                    factorCount++;
+                    unsigned int tieBreaker = rand() % potentialLevels.size();
+                    candidate.at(factorOrder.at(currentFactor)) = potentialLevels.at(tieBreaker);
+                    runningTotal += bestCount;
+
+                    currentFactor++;
                 }
 
-                if (runningTotal >= bestTotal) {
+                if (runningTotal > bestTotal) {
+                    potentialCandidates.clear();
+                    potentialCandidates.push_back(candidate);
                     bestTotal = runningTotal;
-                    bestCandidate = candidate;
+                }
+
+                else if(runningTotal == bestTotal)
+                {
+                    potentialCandidates.push_back(candidate);
                 }
             }
 
-            coverMap.coverPairs(bestCandidate);
-            testSuite.push_back(bestCandidate);
-            candidate.clear();
-            bestCandidate.clear();
+            unsigned int tieBreaker = rand() % potentialCandidates.size();
+            testSuite.push_back(potentialCandidates.at(tieBreaker));
+            coverMap.coverPairs(potentialCandidates.at(tieBreaker));
+
         }
 
         testSuites[suite] = testSuite;

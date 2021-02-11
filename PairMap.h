@@ -2,10 +2,10 @@
 // Created by Andrew on 1/28/2021.
 //
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <algorithm>
 #include <random>
 #include <vector>
 #include <regex>
@@ -27,7 +27,6 @@ class PairMap {
 private:
     unordered_map<pair<int,int>,bool,PairHash> coverMap;
     unordered_map<pair<int,int>, bool,PairHash> copyMap;
-    unordered_map<pair<int,int>,bool,PairHash>::iterator it;
     vector<vector<int>> coveringArray;
     int covered = 0;
     int totalPairs;

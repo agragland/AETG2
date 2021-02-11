@@ -5,7 +5,7 @@
 #include "PairMap.h"
 
 PairMap::PairMap(vector<vector<int>> coverArray) {
-    coveringArray = coverArray;
+    coveringArray = move(coverArray);
     int currFactor = 0;
     for(const auto& fct:coveringArray) {
         for (auto lvl:fct) {
@@ -23,9 +23,9 @@ PairMap::PairMap(vector<vector<int>> coverArray) {
 }
 
 void PairMap::coverPairs(vector<int> candidate) {
-    for(int i = 0; i < candidate.size()-1; i++)
+    for(unsigned int i = 0; i < candidate.size()-1; i++)
     {
-        for(int j = i+1; j < candidate.size(); j++)
+        for(unsigned int j = i+1; j < candidate.size(); j++)
         {
             pair<int,int> toCover = make_pair(candidate[i],candidate[j]);
             if(coverMap.erase(toCover))

@@ -39,6 +39,7 @@ int main()
         coveringInput = m.suffix().str();
     }
 
+    clock_t start, end;
     unsigned seed = time(NULL);
     srand(seed);
 
@@ -46,6 +47,7 @@ int main()
 
     vector<vector<vector<int>>> testSuites(100);
 
+    start = clock();
     for(int suite = 0; suite < 100; suite++)
     {
         cout << "Completion Progress: " << suite << "%" << endl;
@@ -84,8 +86,13 @@ int main()
                 vector<int> potentialLevels;
 
                 for (auto it: coveringArray.at(factorOrder.at(currentFactor))) {
-                    if ((count = coverMap.countPairs(it, factorOrder[currentFactor])) >= bestCount) {
+                    if ((count = coverMap.countPairs(it,factorOrder[currentFactor])) > bestCount) {
                         bestCount = count;
+                        potentialLevels.clear();
+                        potentialLevels.push_back(it);
+                    }
+                    else if(count == bestCount)
+                    {
                         potentialLevels.push_back(it);
                     }
                 }
@@ -103,8 +110,13 @@ int main()
 
                     for (auto it: coveringArray.at(factorOrder.at(currentFactor))) {
                         candidate.at(factorOrder.at(currentFactor)) = it;
-                        if ((count = coverMap.countPairs(candidate,factorOrder[currentFactor])) >= bestCount) {
+                        if ((count = coverMap.countPairs(candidate,factorOrder[currentFactor])) > bestCount) {
                             bestCount = count;
+                            potentialLevels.clear();
+                            potentialLevels.push_back(it);
+                        }
+                        else if(count == bestCount)
+                        {
                             potentialLevels.push_back(it);
                         }
                     }
@@ -116,32 +128,31 @@ int main()
                     currentFactor++;
                 }
 
-                if (runningTotal > bestTotal) {
-                    potentialCandidates.clear();
-                    potentialCandidates.push_back(candidate);
-                    bestTotal = runningTotal;
-                }
-
-                else if(runningTotal == bestTotal)
+                if(runningTotal >= bestTotal)
                 {
-                    potentialCandidates.push_back(candidate);
+                    bestTotal = runningTotal;
+                    bestCandidate = candidate;
                 }
             }
 
-            unsigned int tieBreaker = rand() % potentialCandidates.size();
-            testSuite.push_back(potentialCandidates.at(tieBreaker));
-            coverMap.coverPairs(potentialCandidates.at(tieBreaker));
+            //unsigned int tieBreaker = rand() % potentialCandidates.size();
+            testSuite.push_back(bestCandidate);
+            coverMap.coverPairs(bestCandidate);
 
         }
 
         testSuites[suite] = testSuite;
         coverMap.resetPairs();
     }
+    end = clock();
 
+
+    vector<vector<int>> lowestSuite = testSuites.at(0);
     int lowest = testSuites.at(0).size();
     int highest = 0;
-    int average = 0;
+    int average;
     int sum = 0;
+    double avgTime = (((double) (end-start))/CLOCKS_PER_SEC)/100;
 
     for(auto t:testSuites)
     {
@@ -152,6 +163,7 @@ int main()
         if(t.size() < lowest)
         {
             lowest = t.size();
+            lowestSuite = t;
         }
         sum += t.size();
     }
@@ -162,6 +174,23 @@ int main()
     cout << "Lowest mAETG: " << lowest << endl;
     cout << "Highest mAETG: " << highest << endl;
     cout << "Average mAETG: " << average << endl;
+    cout << "Average Execution Time: " << avgTime << " seconds" <<  endl;
+
+    //send lowest test suite to outputFile
+    ofstream output;
+    output.open("aetg_output.txt");
+    output << lowestSuite.size() << "\n\n";
+    for(auto c: lowestSuite)
+    {
+        for(auto f:c)
+        {
+            output << f << " ";
+        }
+        output << "\n";
+    }
+    output.close();
+
+    cout << "\nBest test suite output is stored in \'aetg_output.txt\'" << endl;
 
     //for the first factor, check which level can cover the most new pairs, store result into candidate data structure
     //for the next factors, check which level will cover the most pairs when

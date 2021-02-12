@@ -1,16 +1,15 @@
-#Makefile for CSCE 3600 Major 2
-#Group-14
+#Makefile for CSCE 3444 - AETG Algorithm - Andrew Ragland
 
-PROG = aetg2
-OBJS = PairMap.o main.o
-EXT = PairMap.h
-FLAGS = -O3
+PROG = aetg2_agr
+OBJS = PairSet.o main.o
+SRCS = PairSet.cpp main.cpp
+EXT = PairSet.h
 
 $(PROG) : $(OBJS)
-	g++ -o $(PROG) $(OBJS)
+	g++ -O3 -o $(PROG) $(OBJS)
 
-PairMap.o : $(EXT)
-	g++ $(FLAGS) PairMap.c
+$(OBJS) : $(SRCS) $(EXT)
+	g++ -O3 -c $(SRCS)
 
 clean :
 	rm -f core $(PROG) $(OBJS)

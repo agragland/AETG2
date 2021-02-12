@@ -1,8 +1,6 @@
-//
-// Created by Andrew on 1/28/2021.
-//
+//CSCE 3444 - ATEG Algorithm - Main File - Andrew Ragland
 
-#include "PairMap.h"
+#include "PairSet.h"
 
 
 int main()
@@ -10,30 +8,30 @@ int main()
     vector<vector<int>> coveringArray;
     vector<string> toRegex;
     string coveringInput;
-    int factors = 0;
-    int levels = 0;
-    int currFactor = 0;
 
-    cout << "Input as follows - \"Levels^Factors\" - for as many factors and levels as desired: ";
+    //Take input from user for creating covering array of all values - supports multilevel factors through regex
+    cout << "Input as follows - \"#Levels^#Factors\" - put a space between each for multi-level covering:";
     getline(cin, coveringInput);
     cout << endl;
     regex fctLvl ("(\\d+)\\^(\\d+)");
     smatch m;
 
+    //Generate vector of vector of int to add each level to its factor for as many different levels/factors specified
     int lvlStep = 0;
+    int inputFactor = 0;
     while(regex_search(coveringInput,m,fctLvl))
     {
-        levels = stoi(m[1]);
-        factors = stoi(m[2]);
-        coveringArray.resize(factors+currFactor);
+        int levels = stoi(m[1]);
+        int factors = stoi(m[2]);
+        coveringArray.resize(factors+inputFactor);
 
         for(int i = 0; i < factors; i++)
         {
             for(int j = 0; j < levels; j++)
             {
-                coveringArray.at(currFactor).push_back(j+lvlStep);
+                coveringArray.at(inputFactor).push_back(j+lvlStep);
             }
-            currFactor++;
+            inputFactor++;
             lvlStep+=levels;
         }
         coveringInput = m.suffix().str();
@@ -43,49 +41,49 @@ int main()
     unsigned seed = time(NULL);
     srand(seed);
 
-    PairMap coverMap(coveringArray);
+    PairSet coverMap(coveringArray); //Declare PairSet object
 
-    vector<vector<vector<int>>> testSuites(100);
+    vector<vector<vector<int>>> testSuites(100); //Instantiate vector to store all test suites
 
+    //Set up factor randomization
+    vector<int> factorOrder (coveringArray.size());
+    for (int i = 0; i < coveringArray.size(); i++) {
+        factorOrder[i] = i;
+    }
+
+    //Begin timer and generate 100 test suites
     start = clock();
     for(int suite = 0; suite < 100; suite++)
     {
-        cout << "Completion Progress: " << suite << "%" << endl;
-
+        //Instantiate a test suite, a candidate, and the best candidate
         vector<vector<int>> testSuite;
         vector<int> candidate(coveringArray.size());
         vector<int> bestCandidate(coveringArray.size());
-        vector<vector<int>> potentialCandidates;
 
+        //Used to store the values for which candidate can cover the most pairs
         int bestTotal;
         int count;
 
-        vector<int> factorOrder (coveringArray.size());
-        for (int i = 0; i < coveringArray.size(); i++) {
-            factorOrder[i] = i;
-        }
-
+        //Generate a test suite
         while (coverMap.getCovered() < coverMap.getTotalPairs()){
 
             bestTotal = -1;
-            fill(bestCandidate.begin(),bestCandidate.end(), -1);
 
-
-
+            //Generate 50 candidates
             for (int i = 0; i < 50; i++) {
 
                 fill(candidate.begin(),candidate.end(), -1);
-                //randomize the order of factors to find levels for
 
+                //Randomize the order of factors to choose from
                 shuffle(factorOrder.begin(), factorOrder.end(), default_random_engine(rand()));
 
-                //looking at the first factor
-                int runningTotal = 0;
-                int bestCount = -1;
-                int currentFactor = 0;
-                vector<int> potentialLevels;
+                vector<int> potentialLevels; //Store the levels that can cover the most
+                int runningTotal = 0; //Store the number of pairs the current candidate can cover
+                int bestCount = -1; //Store the number of pairs the best level can cover
+                int currentFactor = 0; //The current factor
 
-                for (auto it: coveringArray.at(factorOrder.at(currentFactor))) {
+                //The first factor
+                for (auto it: coveringArray[factorOrder[currentFactor]]) {
                     if ((count = coverMap.countPairs(it,factorOrder[currentFactor])) > bestCount) {
                         bestCount = count;
                         potentialLevels.clear();
@@ -97,19 +95,19 @@ int main()
                     }
                 }
 
-                //used for picking desired candidate
+                //Break a tie if there is more than one level that can cover the most pairs
                 unsigned int tieBreaker = rand() % potentialLevels.size();
-                candidate.at(factorOrder.at(currentFactor)) = potentialLevels.at(tieBreaker);
+                candidate[factorOrder[currentFactor]] = potentialLevels[tieBreaker];
 
                 currentFactor++;
-                //repeat with rest of the factors
+
+                //Repeat with rest of the factors
                 while (currentFactor < factorOrder.size()) {
                     bestCount = -1;
                     potentialLevels.clear();
 
-
-                    for (auto it: coveringArray.at(factorOrder.at(currentFactor))) {
-                        candidate.at(factorOrder.at(currentFactor)) = it;
+                    for (auto it: coveringArray[factorOrder[currentFactor]]) {
+                        candidate[factorOrder[currentFactor]] = it;
                         if ((count = coverMap.countPairs(candidate,factorOrder[currentFactor])) > bestCount) {
                             bestCount = count;
                             potentialLevels.clear();
@@ -121,13 +119,15 @@ int main()
                         }
                     }
 
-                    unsigned int tieBreaker = rand() % potentialLevels.size();
+                    //Break a tie if there is more than one level that can cover the most pairs
+                    tieBreaker = rand() % potentialLevels.size();
                     candidate.at(factorOrder.at(currentFactor)) = potentialLevels.at(tieBreaker);
                     runningTotal += bestCount;
 
                     currentFactor++;
                 }
 
+                //Check if our current candidate can cover more than the best candidate
                 if(runningTotal >= bestTotal)
                 {
                     bestTotal = runningTotal;
@@ -135,25 +135,26 @@ int main()
                 }
             }
 
-            //unsigned int tieBreaker = rand() % potentialCandidates.size();
+            //Store the best candidate in the test suite and cover the pairs
             testSuite.push_back(bestCandidate);
             coverMap.coverPairs(bestCandidate);
 
         }
 
+        //Once the test suite is finished being generated, add it to the larger vector and reset for another test
         testSuites[suite] = testSuite;
         coverMap.resetPairs();
     }
     end = clock();
 
 
-    vector<vector<int>> lowestSuite = testSuites.at(0);
-    int lowest = testSuites.at(0).size();
-    int highest = 0;
-    int average;
-    int sum = 0;
-    double avgTime = (((double) (end-start))/CLOCKS_PER_SEC)/100;
+    vector<vector<int>> lowestSuite = testSuites[0]; //Store the test suite which has the least candidates
+    int lowest = testSuites[0].size(); //Store the value of the least number of candidates
+    int highest = 0; //Store the value of the largest number of candidates
+    int average; //Store the average test suite candidate value
+    double avgTime = (((double) (end-start))/CLOCKS_PER_SEC)/100; //Calculate the average execution time
 
+    int sum = 0;
     for(auto t:testSuites)
     {
         if(t.size() > highest)
@@ -171,12 +172,12 @@ int main()
     average = sum/100;
 
     cout << "Results: " << endl;
-    cout << "Lowest mAETG: " << lowest << endl;
-    cout << "Highest mAETG: " << highest << endl;
-    cout << "Average mAETG: " << average << endl;
+    cout << "Lowest AETG: " << lowest << endl;
+    cout << "Highest AETG: " << highest << endl;
+    cout << "Average AETG: " << average << endl;
     cout << "Average Execution Time: " << avgTime << " seconds" <<  endl;
 
-    //send lowest test suite to outputFile
+    //Send test suite with lowest candidates to output file
     ofstream output;
     output.open("aetg_output.txt");
     output << lowestSuite.size() << "\n\n";
@@ -190,48 +191,8 @@ int main()
     }
     output.close();
 
+    //Tell the user where the output is stored
     cout << "\nBest test suite output is stored in \'aetg_output.txt\'" << endl;
-
-    //for the first factor, check which level can cover the most new pairs, store result into candidate data structure
-    //for the next factors, check which level will cover the most pairs when
-    // paired with the level of all previous factors, store result into candida
-
-    //randomly order factors 2,1,4,3
-
-    //[], [], [] ,[]
-    //3,4,5 can cover upto 9 pairs - randomly choose 4
-    //[], 4, [], []
-    //0,4 1,4 and 2,4 each cover 1 pair, randomly choose 1
-    //1, 4, [], []
-    //(1,9 4,9) (1,10 4,10) (1,11 4,11) each cover 2 pairs - randomly choose 11
-    //1, 4, [], 11
-    //(1,6 4,6 6,11) (1,7 4,7 7,11) (1,8 4,8 8,11) each cover 3 pairs - randomly choose 8
-    //1,4,8,11 <- candidate 1 - can cover 6 pairs
-
-    //generate 49 more candidates, if another candidate can cover more pairs, replace
-
-    //repeat until out of pairs - candidates generated
-
-
-    //repeat 100 times
-
-
-
-    //function to cover pairs takes a candidate and covers according to n, n-1, n-2, etc
-
-    //functions to count pairs can take either single digit or candidate vector to count pairs associated with values
-    //vector resize -1 system, find two positive nums in candidate, check if they are covered, if not move on horizontally
-    //take old num and use it as first num
-
-
-//    vector<pair<int,int>> pairList = coverMap.findPairs(3);
-//
-//    coverMap.coverPairs(pairList);
-//
-//    pairList = coverMap.findPairs(0);
-//
-//    coverMap.coverPairs(pairList);
-
 
     return 0;
 }

@@ -1,9 +1,9 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/AETG2.dir/main.cpp.obj"
-  "CMakeFiles/AETG2.dir/PairMap.cpp.obj"
-  "AETG2.pdb"
   "AETG2.exe"
   "AETG2.exe.manifest"
+  "AETG2.pdb"
+  "CMakeFiles/AETG2.dir/PairSet.cpp.obj"
+  "CMakeFiles/AETG2.dir/main.cpp.obj"
   "libAETG2.dll.a"
 )
 
